@@ -10,6 +10,15 @@
 - Скачайте последний релиз [LitNetDecoder.jar](https://github.com/LionZXY/LitNetDecoder/releases/)
 - Скопируйте `/data/data/com.litnet/databases/library.db` из Android в папку `in` рядом с jar
 - Скопируйте папку `/data/data/com.litnet/files/chapters` из Android в папку `in` рядом с jar (в результате должна появиться папка `in/charapters`)
+```
+├── in
+│   ├── chapters
+│   │   ├── 521.gz
+│   │   └── 523.gz
+│   └── library.db
+└── LitNetDecryptor.jar
+```
+
 - Запустите в папке `java -jar LitNetDecoder.jar`
 - Не все читалки поддерживают устаревший Epub2, поэтому советую прогнать файлы через [конвертер](https://ebook.online-convert.com/ru/convert-to-epub)
 
