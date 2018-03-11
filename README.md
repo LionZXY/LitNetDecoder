@@ -22,6 +22,17 @@
 - Запустите в папке `java -jar LitNetDecryptor.jar`
 - Не все читалки поддерживают устаревший Epub2, поэтому советую прогнать файлы через [конвертер](https://ebook.online-convert.com/ru/convert-to-epub)
 
+## Решения проблем:
+**Q: Error: Unable to access jarfile <path>**
+  
+A: Попробуйте переложить все в папку без русских букв и без пробелов
+
+
+**Q: Caused by: java.security.InvalidKeyException: Illegal key size or default parameters**
+
+A: Нужно пропатчить JRE для поддержки AES 256. [Клац](https://stackoverflow.com/questions/6481627/java-security-illegal-key-size-or-default-parameters) и [клац](https://eax.me/java-crypto-workaround/)
+  
+
 ## Что в результате?
 В папке `bookOut` будут все ваши книги из библиотеки. Если что-то не получиться скачать, в консоль выведится:
 ```
