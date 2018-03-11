@@ -11,6 +11,7 @@
 - Скопируйте `/data/data/com.litnet/databases/library.db` из Android в папку `in` рядом с jar
 - Скопируйте папку `/data/data/com.litnet/files/chapters` из Android в папку `in` рядом с jar (в результате должна появиться папка `in/charapters`)
 - Запустите в папке `java -jar LitNetDecoder.jar`
+- Не все читалки поддерживают устаревший Epub2, поэтому советую прогнать файлы через [конвертер](https://ebook.online-convert.com/ru/convert-to-epub)
 
 ## Что в результате?
 В папке `bookOut` будут все ваши книги из библиотеки. Если что-то не получиться скачать, в консоль выведится:
