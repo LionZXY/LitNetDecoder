@@ -19,7 +19,7 @@
 └── LitNetDecryptor.jar
 ```
 
-- Запустите в папке `java -jar LitNetDecoder.jar`
+- Запустите в папке `java -jar LitNetDecryptor.jar`
 - Не все читалки поддерживают устаревший Epub2, поэтому советую прогнать файлы через [конвертер](https://ebook.online-convert.com/ru/convert-to-epub)
 
 ## Что в результате?
