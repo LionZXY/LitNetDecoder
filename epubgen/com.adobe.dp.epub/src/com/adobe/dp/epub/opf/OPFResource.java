@@ -36,7 +36,7 @@ import com.adobe.dp.epub.util.PathUtil;
 import com.adobe.dp.epub.util.Translit;
 import com.adobe.dp.xml.util.SMapImpl;
 import com.adobe.dp.xml.util.XMLSerializer;
-import com.sun.org.apache.xalan.internal.xsltc.runtime.Hashtable;
+import org.apache.xalan.xsltc.runtime.Hashtable;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;

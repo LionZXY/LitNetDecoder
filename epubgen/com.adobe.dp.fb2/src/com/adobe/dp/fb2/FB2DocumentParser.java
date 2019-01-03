@@ -34,7 +34,7 @@ import com.adobe.dp.css.*;
 import com.adobe.dp.epub.util.Base64;
 import com.adobe.dp.xml.util.SMapAttributesAdapter;
 import com.adobe.dp.xml.util.SMapImpl;
-import com.sun.org.apache.xml.internal.utils.XMLChar;
+import org.apache.xml.utils.XMLChar;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;

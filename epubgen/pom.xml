@@ -16,6 +16,19 @@
     </parent>
 
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/xalan/xalan -->
+        <dependency>
+            <groupId>xalan</groupId>
+            <artifactId>xalan</artifactId>
+            <version>2.7.1</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.xml/org.apache.xml.serializer -->
+        <dependency>
+            <groupId>org.apache.xml</groupId>
+            <artifactId>org.apache.xml.serializer</artifactId>
+            <version>2.7.1-20081006</version>
+        </dependency>
+
 
         <!--
                 <dependency>

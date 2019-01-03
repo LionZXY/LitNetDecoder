@@ -1,15 +1,12 @@
+import com.adobe.dp.epub.io.OCFContainerWriter
 import com.google.gson.GsonBuilder
+import epub.EpubCreator
 import models.Book
 import models.BookChapter
 import models.BookWrapper
-import nl.siegmann.epublib.domain.Author
-import nl.siegmann.epublib.domain.Resource
-import nl.siegmann.epublib.epub.EpubWriter
-import nl.siegmann.epublib.service.MediatypeService
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.net.URL
 import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.NoSuchFileException
@@ -22,8 +19,6 @@ import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import kotlin.collections.ArrayList
 
-typealias EpubBook = nl.siegmann.epublib.domain.Book
-
 fun main(args: Array<String>) {
     File("bookOut").mkdir()
     var books: List<Book> = emptyList()
@@ -34,25 +29,21 @@ fun main(args: Array<String>) {
 }
 
 fun saveBook(book: Book) {
-    val epubBook = EpubBook()
-    epubBook.metadata.addTitle(book.title)
-    epubBook.metadata.addDate(nl.siegmann.epublib.domain.Date(Date(book.created_at)))
-    epubBook.metadata.addDescription(book.annotation)
-    book.tags.forEach { epubBook.metadata.addType(it.name) }
-    book.genres.forEach { epubBook.metadata.addType(it.name) }
-    epubBook.metadata.addAuthor(Author(book.author_name))
-    epubBook.coverImage = Resource(URL(book.cover).openStream(), "cover.jpg")
     book.chapters.forEach {
         try {
-            val text = "<h1> ${it.title} </h1>\n ${getTextChapter(it.id)}"
-            epubBook.addSection(it.title, Resource(text.toByteArray(), MediatypeService.XHTML))
+            it.text = getTextChapter(it.id)
         } catch (e: NoSuchFileException) {
             println("Не найдена часть ${it.title} для книги ${book.title}")
         }
     }
-    val epubWritter = EpubWriter()
+
+    val epubCreator = EpubCreator()
+    val epub = epubCreator.getEpubFile(book)
+
     val filename = book.title.replace("[^a-zA-Zа-яА-Я0-9-_\\.]", "_")
-    epubWritter.write(epubBook, FileOutputStream("bookOut/$filename.epub"))
+    val writer = OCFContainerWriter(
+            FileOutputStream("bookOut/$filename.epub"))
+    epub.serialize(writer)
 }
 
 fun getBookChapters(book: Book, connection: Connection): ArrayList<BookChapter> {
