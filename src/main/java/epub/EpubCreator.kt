@@ -49,7 +49,7 @@ class EpubCreator {
     private fun addChapter(chapter: BookChapter, epub: Publication,
                            toc: NCXResource, rootTOCEntry: TOCEntry) {
         // create new chapter resource
-        val main = epub.createOPSResource("OPS/chapter${chapter.id}.xhtml")
+        val main = epub.createOPSResource("OPS/chapter${chapter.id}.html")
         epub.addToSpine(main)
 
         // get chapter document
