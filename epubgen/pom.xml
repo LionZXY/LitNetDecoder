@@ -1,0 +1,124 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.adobe.dp</groupId>
+    <artifactId>epubgen-custom</artifactId>
+    <version>1.2</version>
+    <packaging>jar</packaging>
+
+    <name>epubgen</name>
+
+    <parent>
+        <groupId>ru.lionzxy</groupId>
+        <artifactId>LitNetDecryptor</artifactId>
+        <version>1.0</version>
+    </parent>
+
+    <dependencies>
+
+        <!--
+                <dependency>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                    <version>4.8.1</version>
+                    <scope>test</scope>
+                </dependency>
+        -->
+
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>com.adobe.dp.epub/src</source>
+                                <source>com.adobe.dp.fb2/src</source>
+                                <source>com.adobe.dp.office.word/src</source>
+                                <source>com.adobe.dp.otf/src</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>resources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>add-resource</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>com.adobe.dp.epub/src</directory>
+                                    <excludes>
+                                        <exclude>**/*.java</exclude>
+                                    </excludes>
+                                </resource>
+                                <resource>
+                                    <directory>com.adobe.dp.fb2/src</directory>
+                                    <excludes>
+                                        <exclude>**/*.java</exclude>
+                                    </excludes>
+                                </resource>
+                                <resource>
+                                    <directory>com.adobe.dp.office.word/src</directory>
+                                    <excludes>
+                                        <exclude>**/*.java</exclude>
+                                    </excludes>
+                                </resource>
+                                <resource>
+                                    <directory>com.adobe.dp.otf/src</directory>
+                                    <excludes>
+                                        <exclude>**/*.java</exclude>
+                                    </excludes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <!--
+                                        <execution>
+                                            <phase>generate-test-sources</phase>
+                                            <goals>
+                                                <goal>add-source</goal>
+                                            </goals>
+                                            <configuration>
+                                                <sources>
+                                                    <source>com.adobe.dp.epubtest/src</source>
+                                                </sources>
+                                            </configuration>
+                                        </execution>
+                    -->
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+<!--
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.7.1</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*$*</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+-->
+        </plugins>
+    </build>
+
+</project>
