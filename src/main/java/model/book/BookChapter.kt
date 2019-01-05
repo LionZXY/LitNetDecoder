@@ -1,6 +1,10 @@
-package models
+package model.book
 
-data class BookChapter(var id: Int,
+import com.google.gson.annotations.SerializedName
+
+data class BookChapter(
+        @SerializedName("id")
+        var id: Int,
                        var title: String,
                        var pageCount: Int,
                        var text: String? = null) {

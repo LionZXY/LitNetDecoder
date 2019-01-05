@@ -1,4 +1,4 @@
-package models
+package model.book
 
 class Tag(var id: Int,
           var name: String){

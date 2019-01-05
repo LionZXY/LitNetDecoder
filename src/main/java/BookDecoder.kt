@@ -1,9 +1,9 @@
 import com.adobe.dp.epub.io.OCFContainerWriter
 import com.google.gson.GsonBuilder
 import epub.EpubCreator
-import models.Book
-import models.BookChapter
-import models.BookWrapper
+import model.book.Book
+import model.book.BookChapter
+import model.book.BookWrapper
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileOutputStream

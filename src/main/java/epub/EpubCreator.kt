@@ -5,8 +5,8 @@ import com.adobe.dp.epub.opf.NCXResource
 import com.adobe.dp.epub.opf.Publication
 import com.adobe.dp.epub.ops.Element
 import com.adobe.dp.epub.ops.OPSDocument
-import models.Book
-import models.BookChapter
+import model.book.Book
+import model.book.BookChapter
 import org.jsoup.Jsoup
 import org.jsoup.nodes.TextNode
 import org.slf4j.LoggerFactory
@@ -23,7 +23,7 @@ class EpubCreator {
         val epub = Publication()
 
         epub.addDCMetadata("title", book.title)
-        epub.addDCMetadata("date", Date(book.created_at).toString())
+        epub.addDCMetadata("date", Date(book.createdAt).toString())
         epub.addDCMetadata("description", book.annotation)
         epub.addDCMetadata("creator", book.author_name)
         epub.addDCMetadata("author", book.author_name)
@@ -64,6 +64,11 @@ class EpubCreator {
         val body = mainDoc.body
 
         // add a header
+        val h1 = mainDoc.createElement("h1")
+        h1.add(chapter.title)
+        body.add(h1)
+
+        // parse and add content
         val elements = extractElementFromText(chapter.text ?: "Нет главы", mainDoc)
         elements.content().forEach { body.add(it) }
     }

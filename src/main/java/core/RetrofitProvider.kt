@@ -1,5 +1,7 @@
 package core
 
+import api.BookApi
+import api.LibraryApi
 import api.RegisterApi
 import api.UserApi
 import okhttp3.OkHttpClient
@@ -22,6 +24,14 @@ class RetrofitProvider {
 
     fun getUserApi(): UserApi {
         return retrofit.create(UserApi::class.java)
+    }
+
+    fun getLibraryApi(): LibraryApi {
+        return retrofit.create(LibraryApi::class.java)
+    }
+
+    fun getBookApi(): BookApi {
+        return retrofit.create(BookApi::class.java)
     }
 
     private fun getOkHttp(): OkHttpClient {
