@@ -1,3 +1,5 @@
 package bot.cmd
 
-interface IBotCommand
+interface IBotCommand {
+    fun matchCmd(cmd: String): Boolean
+}

@@ -18,3 +18,9 @@ class TelegramUser(id: EntityID<Long>) : LongEntity(id) {
     var temporaryStorage by TelegramUserDao.temporaryStorage
     var prevStage by TelegramUserDao.prevStage
 }
+
+enum class TGUserStage(val id: Int) {
+    WAIT_ENTER_LOGIN(1),
+    WAIT_ENTER_PASSWORD(2),
+    AUTH_IN_LITNET(3)
+}

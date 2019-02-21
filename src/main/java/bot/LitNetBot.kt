@@ -2,12 +2,15 @@ package bot
 
 import bot.auth.AuthProvider
 import bot.route.CompositeDispatcher
+import core.RetrofitProvider
 import org.telegram.telegrambots.bots.TelegramLongPollingBot
 import org.telegram.telegrambots.meta.api.objects.Update
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove
 
 class LitNetBot : TelegramLongPollingBot() {
-    private val authProvider = AuthProvider(this)
-    private val compositeDispatcher = CompositeDispatcher()
+    private val retrofitProvider = RetrofitProvider()
+    private val authProvider = AuthProvider(this, retrofitProvider)
+    private val compositeDispatcher = CompositeDispatcher(this)
 
     override fun getBotUsername() = "LitNetBot"
 
