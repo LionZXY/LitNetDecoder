@@ -2,7 +2,7 @@ package model.book
 
 import com.google.gson.annotations.SerializedName
 
-data class Book(
+class Book(
         @SerializedName("annotation")
         var annotation: String,
         @SerializedName("author_name")
@@ -24,7 +24,7 @@ data class Book(
         @SerializedName("url")
         var url: String,
         @SerializedName("id")
-        var id: Int = 0,
+        var id: Long = 0,
         var chapters: List<BookChapter> = emptyList(),
         @SerializedName("author_id")
         var authorId: Int = 0,

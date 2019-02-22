@@ -11,6 +11,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 class RetrofitProvider {
+    private val authInterceptor = LitNetInterceptorAuth()
     private val retrofit = Retrofit.Builder()
             .client(getOkHttp())
             .addConverterFactory(GsonConverterFactory.create())
@@ -34,11 +35,15 @@ class RetrofitProvider {
         return retrofit.create(BookApi::class.java)
     }
 
+    fun setUserToken(token: String) {
+        authInterceptor.setUser(token)
+    }
+
     private fun getOkHttp(): OkHttpClient {
         val logging = HttpLoggingInterceptor()
         logging.level = HttpLoggingInterceptor.Level.BODY
         return OkHttpClient.Builder()
-                .addInterceptor(LitNetInterceptorAuth)
+                .addInterceptor(authInterceptor)
                 .addInterceptor(logging)
                 .build()
     }

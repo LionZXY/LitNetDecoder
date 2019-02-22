@@ -6,7 +6,7 @@ import okhttp3.Response
 const val deviceId = "351256985671943"
 const val secretKey = "14a6579a984b3c6abecda6c2dfa83a64"
 
-object LitNetInterceptorAuth : Interceptor {
+class LitNetInterceptorAuth : Interceptor {
     var userToken = ""
 
     fun setUser(userToken: String) {

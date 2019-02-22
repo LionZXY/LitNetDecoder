@@ -5,11 +5,10 @@ import bot.route.CompositeDispatcher
 import core.RetrofitProvider
 import org.telegram.telegrambots.bots.TelegramLongPollingBot
 import org.telegram.telegrambots.meta.api.objects.Update
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove
 
 class LitNetBot : TelegramLongPollingBot() {
     private val retrofitProvider = RetrofitProvider()
-    private val authProvider = AuthProvider(this, retrofitProvider)
+    private val authProvider = AuthProvider(this)
     private val compositeDispatcher = CompositeDispatcher(this)
 
     override fun getBotUsername() = "LitNetBot"
@@ -21,8 +20,9 @@ class LitNetBot : TelegramLongPollingBot() {
             return
         }
 
-        val user = authProvider.getCurrentUser(upd) ?: return
-        compositeDispatcher.dispatchAndExecute(upd, user)
+        val retrofitProvider = RetrofitProvider()
+        val user = authProvider.getCurrentUser(upd, retrofitProvider) ?: return
+        compositeDispatcher.dispatchAndExecute(upd, user, retrofitProvider)
     }
 
 }

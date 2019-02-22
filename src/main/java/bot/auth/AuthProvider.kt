@@ -2,11 +2,10 @@ package bot.auth
 
 import bot.LitNetBot
 import core.RetrofitProvider
-import db.TelegramUser
-import db.TelegramUserDao
-import db.TGUserStage
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.insert
+import db.*
+import io.reactivex.Completable
+import org.jetbrains.exposed.dao.EntityID
+import org.jetbrains.exposed.sql.insertIgnore
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
@@ -16,24 +15,16 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow
-import kotlin.math.log
 
-class AuthProvider(val bot: LitNetBot, val retrofitProvider: RetrofitProvider) {
-
-    init {
-        transaction {
-            SchemaUtils.create(TelegramUserDao)
-        }
-    }
-
-    fun getCurrentUser(upd: Update): TelegramUser? {
+class AuthProvider(val bot: LitNetBot) {
+    fun getCurrentUser(upd: Update, retrofitProvider: RetrofitProvider): TelegramUser? {
         var toExit: TelegramUser? = null
         val chatId = upd.message.chatId
         transaction {
             val telegramUser = TelegramUser.findById(chatId)
 
             if (upd.message.text.equals("Авторизоваться", true)) {
-                TelegramUser.new (chatId) {
+                TelegramUser.new(chatId) {
                     this.prevStage = TGUserStage.WAIT_ENTER_LOGIN.id
                 }
                 showAuthMessage(chatId)
@@ -47,7 +38,7 @@ class AuthProvider(val bot: LitNetBot, val retrofitProvider: RetrofitProvider) {
 
             if (telegramUser.prevStage == TGUserStage.WAIT_ENTER_LOGIN.id) {
                 val login = upd.message.text
-                TelegramUserDao.update ({ TelegramUserDao.id eq chatId }) {
+                TelegramUserDao.update({ TelegramUserDao.id eq chatId }) {
                     it[TelegramUserDao.prevStage] = TGUserStage.WAIT_ENTER_PASSWORD.id
                     it[TelegramUserDao.temporaryStorage] = login
                 }
@@ -60,23 +51,26 @@ class AuthProvider(val bot: LitNetBot, val retrofitProvider: RetrofitProvider) {
                 val password = upd.message.text
                 val authMessageId = showProgressAuthMessage(chatId, login, password)
 
-                TelegramUserDao.update({TelegramUserDao.id eq chatId}) {
+                TelegramUserDao.update({ TelegramUserDao.id eq chatId }) {
                     it[TelegramUserDao.prevStage] = TGUserStage.AUTH_IN_LITNET.id
                 }
 
-                retrofitProvider.getUserApi().authByLogin(login, password).subscribe ({ user ->
-                    TelegramUserDao.update ({ TelegramUserDao.id eq chatId }) { insStat ->
-                        insStat[TelegramUserDao.litNetToken] = user.token
-                    }
-                    showAuthSucs(chatId, login, authMessageId)
-                }, {
-                    println(it)
-                    showAuthFail(chatId, login, authMessageId)
-                    TelegramUserDao.update ({ TelegramUserDao.id eq chatId }) { insStat ->
-                        insStat[TelegramUserDao.prevStage] = TGUserStage.WAIT_ENTER_LOGIN.id
-                    }
-                    showAuthMessage(chatId)
-                })
+                retrofitProvider.getUserApi().authByLogin(login, password).singleOrError()
+                        .doOnSuccess { retrofitProvider.setUserToken(it.token) }
+                        .flatMap { user -> onFirstAuth(telegramUser, retrofitProvider).toSingleDefault(user) }
+                        .subscribe({ user ->
+                            TelegramUserDao.update({ TelegramUserDao.id eq chatId }) { insStat ->
+                                insStat[TelegramUserDao.litNetToken] = user.token
+                            }
+                            showAuthSucs(chatId, login, authMessageId)
+                        }, {
+                            println(it)
+                            showAuthFail(chatId, login, authMessageId)
+                            TelegramUserDao.update({ TelegramUserDao.id eq chatId }) { insStat ->
+                                insStat[TelegramUserDao.prevStage] = TGUserStage.WAIT_ENTER_LOGIN.id
+                            }
+                            showAuthMessage(chatId)
+                        })
                 return@transaction
             }
 
@@ -88,6 +82,22 @@ class AuthProvider(val bot: LitNetBot, val retrofitProvider: RetrofitProvider) {
             toExit = telegramUser
         }
         return toExit
+    }
+
+    private fun onFirstAuth(user: TelegramUser, retrofitProvider: RetrofitProvider): Completable {
+        return retrofitProvider.getLibraryApi().get()
+                .flatMapIterable { it }
+                .map { it.book }
+                .map { book ->
+                    book.createOrUpdateDBBook()
+                    transaction {
+                        BookToUserDao.insertIgnore {
+                            it[BookToUserDao.user] = user.id
+                            it[BookToUserDao.book] = EntityID(book.id, BookToUserDao)
+                        }
+                    }
+                }
+                .flatMapCompletable { Completable.complete() }
     }
 
     private fun showAuthFail(chatId: Long, login: String, messageId: Int) {

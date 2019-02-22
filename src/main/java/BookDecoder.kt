@@ -71,7 +71,7 @@ fun getBooksFromDB(connection: Connection): List<Book> {
         val bookJson = bookRS.getString("book")
         val bookWrapper = gson.fromJson(bookJson, BookWrapper::class.java)
         val book = bookWrapper.book
-        book.id = bookId
+        book.id = bookId.toLong()
         books.add(book)
     }
     return books
