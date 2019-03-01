@@ -25,10 +25,10 @@ fun main(args: Array<String>) {
     DriverManager.getConnection("jdbc:sqlite:in/library.db").use { connection ->
         books = getBooksFromDB(connection).onEach { it.chapters = getBookChapters(it, connection) }
     }
-    books.forEach { saveBook(it) }
+    books.forEach { saveBookAndRequest(it) }
 }
 
-fun saveBook(book: Book) {
+fun saveBookAndRequest(book: Book) {
     book.chapters.forEach {
         try {
             it.text = getTextChapter(it.id)

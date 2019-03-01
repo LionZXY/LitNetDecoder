@@ -25,7 +25,7 @@ class Book(
         var url: String,
         @SerializedName("id")
         var id: Long = 0,
-        var chapters: List<BookChapter> = emptyList(),
+        var chapters: ArrayList<BookChapter> = ArrayList(),
         @SerializedName("author_id")
         var authorId: Int = 0,
         @SerializedName("pub_id")
