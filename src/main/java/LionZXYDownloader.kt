@@ -1,6 +1,4 @@
 import com.adobe.dp.epub.io.OCFContainerWriter
-import com.google.gson.Gson
-import core.LitNetInterceptorAuth
 import core.RetrofitProvider
 import epub.EpubCreator
 import io.reactivex.Observable
@@ -8,19 +6,18 @@ import model.book.Book
 import utils.LitNetDecode
 import java.io.File
 import java.io.FileOutputStream
-import java.nio.file.NoSuchFileException
 
 fun main(args: Array<String>) {
     val provider = RetrofitProvider()
     provider.setUserToken("s7eEW8jOhSGiqCkRPRNt5laY350g4rDe")
     val libraryApi = provider.getLibraryApi()
     libraryApi.get().map { list -> list.map { it.book } }
-            .flatMap { getBookWithChapter(it) }
-            .subscribe { list -> list.forEach { saveBook(it) } }
+            .flatMap { getBookWithChapter(it, provider) }
+            .subscribe({ list -> list.forEach { saveBook(it) } }, { println(it) })
 }
 
-fun getBookWithChapter(books: List<Book>): Observable<List<Book>> {
-    val bookApi = RetrofitProvider().getBookApi()
+fun getBookWithChapter(books: List<Book>, provider: RetrofitProvider): Observable<List<Book>> {
+    val bookApi = provider.getBookApi()
     val bookMap = books.map { it.id to it }.toMap()
     return bookApi.getContentsByIds(books.map { it.id }).map { list ->
         list.map { it.contents }.flatten()

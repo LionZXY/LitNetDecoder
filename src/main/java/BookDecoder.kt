@@ -7,6 +7,7 @@ import model.book.BookWrapper
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.io.UnsupportedEncodingException
 import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.NoSuchFileException
@@ -18,6 +19,7 @@ import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import kotlin.collections.ArrayList
+
 
 fun main(args: Array<String>) {
     File("bookOut").mkdir()
@@ -78,7 +80,12 @@ fun getBooksFromDB(connection: Connection): List<Book> {
 }
 
 fun getTextChapter(chapterId: Int): String {
-    val book = extractGz(File("in/chapters/$chapterId.gz"))
+    val book = try {
+        extractGz(File("in/chapters/$chapterId.gz"))
+    } catch (e: Exception) {
+        println(e)
+        null
+    } ?: return ""
     val gson = GsonBuilder().create()
     val lines = gson.fromJson(book, Array<String>::class.java)
     val sb = StringBuilder()
@@ -89,7 +96,8 @@ fun getTextChapter(chapterId: Int): String {
 fun extractGz(file: File): String {
     val cryptString = String(Files.readAllBytes(file.toPath()))
     val instance = Cipher.getInstance("AES/CBC/PKCS5Padding")
-    instance.init(2, SecretKeySpec("14a6579a984b3c6abecda6c2dfa83a64".toByteArray(charset("UTF-8")), "AES"),
+    val key = getKey("C38FB23A402222A0C17D34A92F971D1F")
+    instance.init(2, key,
             IvParameterSpec(cryptString.toByteArray(Charset.forName("UTF-8")), 0, 16))
     val doFinal = instance.doFinal(Base64.getDecoder().decode(cryptString))
     val bArr = Arrays.copyOfRange(doFinal, 16, doFinal.size)
@@ -97,4 +105,13 @@ fun extractGz(file: File): String {
     val byteGZIPInputStream = GZIPInputStream(ByteArrayInputStream(bArr), 8192)
     val text = byteGZIPInputStream.reader().readText()
     return text
+}
+
+@Throws(UnsupportedEncodingException::class)
+private fun getKey(str: String): SecretKeySpec {
+    val bArr = ByteArray(32)
+    Arrays.fill(bArr, 0.toByte())
+    val bytes = str.toByteArray(charset("UTF-8"))
+    System.arraycopy(bytes, 0, bArr, 0, if (bytes.size < bArr.size) bytes.size else bArr.size)
+    return SecretKeySpec(bArr, "AES")
 }

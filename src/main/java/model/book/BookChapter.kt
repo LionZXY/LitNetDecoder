@@ -10,7 +10,7 @@ data class BookChapter(
         var pageCount: Int,
         var text: String? = null,
         @SerializedName("book_id")
-        var bookId: Int = 0,
+        var bookId: Long = 0,
         @SerializedName("create_date")
         var createDate: Long = 0,
         @SerializedName("last_update")

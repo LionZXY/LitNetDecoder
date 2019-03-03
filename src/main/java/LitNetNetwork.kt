@@ -1,14 +1,8 @@
-import core.LitNetInterceptorAuth
 import core.RetrofitProvider
-import model.AbstractUser
 
 fun main(args: Array<String>) {
-    /*
-    RetrofitProvider.getUserApi().authByLogin("nastya.afonina.98@bk.ru", "afonka27")
+    RetrofitProvider().getUserApi().authByLogin("nikita@kulikof.ru", "159357za")
             .singleOrError()
-            .doOnSuccess {
-                LitNetInterceptorAuth.setUser(it.token)
-            }
-            .flatMap { RetrofitProvider.getUserApi().findByToken(it.token).singleOrError() }
-            .subscribe({ println(it) }, { println(it) })*/
+            .subscribe({ println(it) }, { println(it) })
+
 }

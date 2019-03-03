@@ -25,7 +25,7 @@ class LitNetInterceptorAuth : Interceptor {
             httpUrl.addEncodedQueryParameter("user_token", userToken)
         }
         httpUrl.addEncodedQueryParameter("sign", Hash.encode(builder.toString()))
-                .addEncodedQueryParameter("version", 67.toString())
+                .addEncodedQueryParameter("version", 1174.toString())
                 .addEncodedQueryParameter("lang_content", "ru")
                 .addEncodedQueryParameter("lang_interface", "ru")
         return chain.proceed(request.newBuilder().url(httpUrl.build()).build())

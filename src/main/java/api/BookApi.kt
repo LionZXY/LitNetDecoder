@@ -17,7 +17,7 @@ interface BookApi {
     fun getContentsById(@Query("bookId") id: Int): Observable<List<BookChapter>>
 
     @GET("book/contents-by-ids")
-    fun getContentsByIds(@Query("book_ids[]") ids: List<Int>): Observable<List<BookChaptersWrap>>
+    fun getContentsByIds(@Query("book_ids[]") ids: List<Long>): Observable<List<BookChaptersWrap>>
 
     @GET("book/get-chapters-texts")
     fun getCahpters(@Query("chapter_ids[]") ids: List<Int>): Observable<List<BookChapterText>>
