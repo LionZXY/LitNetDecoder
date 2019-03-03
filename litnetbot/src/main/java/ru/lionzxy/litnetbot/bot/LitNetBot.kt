@@ -31,6 +31,10 @@ class LitNetBot : TelegramLongPollingBot() {
     }
 
     private fun internalOnUpdateReceived(upd: Update) {
+        if (compositeDispatcher.dispatchAndExecute(upd)) {
+            return
+        }
+
         val retrofitProvider = RetrofitProvider()
         val user = authProvider.getCurrentUser(upd, retrofitProvider) ?: return
         compositeDispatcher.dispatchAndExecute(upd, user, retrofitProvider)
