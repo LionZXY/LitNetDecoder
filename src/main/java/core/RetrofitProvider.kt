@@ -1,9 +1,6 @@
 package core
 
-import api.BookApi
-import api.LibraryApi
-import api.RegisterApi
-import api.UserApi
+import api.*
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -33,6 +30,10 @@ class RetrofitProvider {
 
     fun getBookApi(): BookApi {
         return retrofit.create(BookApi::class.java)
+    }
+
+    fun getNoticedApi(): NoticedApi {
+        return retrofit.create(NoticedApi::class.java)
     }
 
     fun setUserToken(token: String) {
