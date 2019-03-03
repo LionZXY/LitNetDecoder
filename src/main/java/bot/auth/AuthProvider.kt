@@ -1,11 +1,12 @@
 package bot.auth
 
 import bot.LitNetBot
+import bot.cmd.helpers.UpdateHelper
 import core.RetrofitProvider
-import db.*
+import db.TGUserStage
+import db.TelegramUser
+import db.TelegramUserDao
 import io.reactivex.Completable
-import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.sql.insertIgnore
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
@@ -17,6 +18,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow
 
 class AuthProvider(val bot: LitNetBot) {
+    val updateHelper = UpdateHelper(bot)
+
     fun getCurrentUser(upd: Update, retrofitProvider: RetrofitProvider): TelegramUser? {
         var toExit: TelegramUser? = null
         val chatId = upd.message.chatId
@@ -79,25 +82,14 @@ class AuthProvider(val bot: LitNetBot) {
                 return@transaction
             }
 
+            retrofitProvider.setUserToken(telegramUser.litNetToken!!)
             toExit = telegramUser
         }
         return toExit
     }
 
     private fun onFirstAuth(user: TelegramUser, retrofitProvider: RetrofitProvider): Completable {
-        return retrofitProvider.getLibraryApi().get()
-                .flatMapIterable { it }
-                .map { it.book }
-                .map { book ->
-                    book.createOrUpdateDBBook()
-                    transaction {
-                        BookToUserDao.insertIgnore {
-                            it[BookToUserDao.user] = user.id
-                            it[BookToUserDao.book] = EntityID(book.id, BookToUserDao)
-                        }
-                    }
-                }
-                .flatMapCompletable { Completable.complete() }
+        return updateHelper.checkUpdateLibrary(retrofitProvider, user)
     }
 
     private fun showAuthFail(chatId: Long, login: String, messageId: Int) {

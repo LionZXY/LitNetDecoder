@@ -2,10 +2,8 @@ package utils
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import java.io.ByteArrayInputStream
 import java.nio.charset.Charset
 import java.util.*
-import java.util.zip.GZIPInputStream
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
@@ -13,7 +11,6 @@ import javax.crypto.spec.SecretKeySpec
 object LitNetDecode {
     val gson = Gson()
     fun encrypt(cryptString: String): String {
-
         val instance = Cipher.getInstance("AES/CBC/PKCS5Padding")
         instance.init(2, SecretKeySpec("14a6579a984b3c6abecda6c2dfa83a64".toByteArray(charset("UTF-8")), "AES"),
                 IvParameterSpec(cryptString.toByteArray(Charset.forName("UTF-8")), 0, 16))

@@ -1,23 +1,72 @@
 package bot.cmd.helpers
 
 import bot.LitNetBot
-import db.BookDao
+import core.RetrofitProvider
+import db.*
+import io.reactivex.Completable
 import model.book.Book
+import model.notify.NotifyObject
+import org.jetbrains.exposed.dao.EntityID
+import org.jetbrains.exposed.sql.insertIgnore
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.joda.time.DateTime
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import utils.EventBus
 
 
-class UpdateHelper(bot: LitNetBot) {
+class UpdateHelper(val bot: LitNetBot) {
     init {
         EventBus.getObservable().subscribe {
             notifyDB(it)
-            notifyUser(it)
+            notifyUsers(it)
         }
     }
 
-    private fun notifyUser(book: Book) {
+    public fun checkUpdate(provider: RetrofitProvider, user: TelegramUser): Boolean {
+        val notices = provider.getNoticedApi().noticedGet().singleOrError().blockingGet()
+                .filter { it.updateAt > user.lastNotify.millis }
+        if (notices.isEmpty()) {
+            return false
+        }
+        transaction {
+            TelegramUserDao.update({ TelegramUserDao.id eq user.id }) {
+                it[TelegramUserDao.lastNotify] = DateTime.now()
+            }
+        }
+
+        notices.forEach { notifyAboutUpdate(bot, user, it) }
+
+        checkUpdateLibrary(provider, user).blockingAwait()
+        return true
+    }
+
+    public fun checkUpdateLibrary(provider: RetrofitProvider, user: TelegramUser): Completable {
+        return provider.getLibraryApi().get()
+                .flatMapIterable { it }
+                .map { it.book }
+                .map { book ->
+                    book.createOrUpdateDBBook()
+                    transaction {
+                        BookToUserDao.insertIgnore {
+                            it[BookToUserDao.user] = user.id
+                            it[BookToUserDao.book] = EntityID(book.id, BookToUserDao)
+                        }
+                    }
+                }
+                .flatMapCompletable { Completable.complete() }
+    }
+
+    private fun notifyAboutUpdate(bot: LitNetBot, user: TelegramUser, notifyObject: NotifyObject) {
+        val message = SendMessage()
+        val redir = "<a href=\"${notifyObject.url}\">Перейти</a>"
+        message.text = "${notifyObject.objectType.emoji}${notifyObject.objectType.description} \n\n ${notifyObject.text}\n$redir"
+        message.enableHtml(true)
+        message.chatId = user.id.value.toString()
+        bot.execute(message)
+    }
+
+    private fun notifyUsers(book: Book) {
         //TODO
     }
 
