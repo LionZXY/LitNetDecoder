@@ -24,7 +24,7 @@ class DownloadBook(val bot: LitNetBot) : IBotCommand {
         }
 
         val bookId = message.substring(message.indexOf("-b", indexOf) + 2)
-        val messageId = bot.execute(SendMessage(upd.message.chatId, "Скачивание книги с id $bookId ...")).messageId
+        val messageId = bot.execute(SendMessage(upd.message.chatId, "Скачивание книги ($bookId)...")).messageId
         val book = retrofitProvider.getBookApi().getBookById(bookId.toInt()).singleOrError().blockingGet()
         val bookFile = downloadHelper.downloadBook(book, retrofitProvider, user)
 

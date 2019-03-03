@@ -13,6 +13,7 @@ object TelegramUserDao : LongIdTable("tuser") {
     val temporaryStorage = text("tmp_storage").nullable()
     val prevStage = integer("tmp_stage").nullable()
     val lastNotify = datetime("last_notify").clientDefault { DateTime.now() }
+    val email = text("email").nullable()
 }
 
 class TelegramUser(id: EntityID<Long>) : LongEntity(id) {
@@ -23,6 +24,7 @@ class TelegramUser(id: EntityID<Long>) : LongEntity(id) {
     var temporaryStorage by TelegramUserDao.temporaryStorage
     var prevStage by TelegramUserDao.prevStage
     val lastNotify by TelegramUserDao.lastNotify
+    val email by TelegramUserDao.email
 }
 
 enum class TGUserStage(val id: Int) {
