@@ -6,15 +6,16 @@ import org.telegram.telegrambots.meta.api.objects.Update
 import ru.lionzxy.litnetbot.bot.auth.AuthProvider
 import ru.lionzxy.litnetbot.bot.route.CompositeDispatcher
 import ru.lionzxy.litnetbot.core.RetrofitProvider
+import ru.lionzxy.litnetbot.utils.Credentials
+import ru.lionzxy.litnetbot.utils.CredentialsEnum
 
 class LitNetBot : TelegramLongPollingBot() {
-    private val retrofitProvider = RetrofitProvider()
     private val authProvider = AuthProvider(this)
     private val compositeDispatcher = CompositeDispatcher(this)
 
-    override fun getBotUsername() = "LitNetBot"
+    override fun getBotUsername() = Credentials.get(CredentialsEnum.TG_USERNAME)
 
-    override fun getBotToken() = "686756892:AAE72ePX0gi6LytWgAc9chfxgEJNn7Sw1Pc"
+    override fun getBotToken() = Credentials.get(CredentialsEnum.TG_TOKEN)
 
     override fun onUpdateReceived(upd: Update?) {
         if (upd == null) {

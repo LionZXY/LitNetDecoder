@@ -18,6 +18,7 @@ class StartMessage(val bot: LitNetBot) : ISimpleBotCommand {
                 "На сервере не хранится логин-пароль, а лишь временный токен для доступа к litnet. Используется API для мобильных приложений\n" +
                 "По запросу любому желающему даю доступ к исходникам\n\n" +
                 "Помощь: /help"
+
         bot.execute(SendMessage(upd.message.chatId, text))
     }
 
