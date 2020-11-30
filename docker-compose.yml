@@ -11,7 +11,7 @@ services:
 
   litnetbot:
     container_name: bots
-    image: lionzxy/litnetbot:1.0
+    image: lionzxy/litnetbot:1.1
     restart: unless-stopped
     depends_on:
       - postgresdb
